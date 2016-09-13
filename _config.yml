@@ -7,7 +7,7 @@ title: 张恒强的博客
 subtitle: 专注技术三十年
 description: 随意而写，记录随笔生活
 author: 张恒强
-language:
+language: zh-Hans
 timezone:
 
 # URL
@@ -63,7 +63,7 @@ pagination_dir: page
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: hexo-theme-icarus
+theme: next
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
