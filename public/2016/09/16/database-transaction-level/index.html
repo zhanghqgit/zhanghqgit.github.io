@@ -1,0 +1,741 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="数据库," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="S QL:1992 事务隔离级别，InnoDB默认是可重复读的（REPEATABLE READ）。MySQL/InnoDB 提供SQL标准所描述的所有四个事务隔离级别。你可以在命令行用–transaction-isolation选项，或在选项文件里，为所有连接设置默认隔离级别。例如，你可以在my.inf文件的[mysqld]节里类似如下设置该选项：1transaction-isolation">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据库事务隔离级别">
+<meta property="og:url" content="https://zhanghqgit.github.io/2016/09/16/database-transaction-level/index.html">
+<meta property="og:site_name" content="张恒强的博客">
+<meta property="og:description" content="S QL:1992 事务隔离级别，InnoDB默认是可重复读的（REPEATABLE READ）。MySQL/InnoDB 提供SQL标准所描述的所有四个事务隔离级别。你可以在命令行用–transaction-isolation选项，或在选项文件里，为所有连接设置默认隔离级别。例如，你可以在my.inf文件的[mysqld]节里类似如下设置该选项：1transaction-isolation">
+<meta property="og:updated_time" content="2016-09-16T14:57:10.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据库事务隔离级别">
+<meta name="twitter:description" content="S QL:1992 事务隔离级别，InnoDB默认是可重复读的（REPEATABLE READ）。MySQL/InnoDB 提供SQL标准所描述的所有四个事务隔离级别。你可以在命令行用–transaction-isolation选项，或在选项文件里，为所有连接设置默认隔离级别。例如，你可以在my.inf文件的[mysqld]节里类似如下设置该选项：1transaction-isolation">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"always"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="https://zhanghqgit.github.io/2016/09/16/database-transaction-level/"/>
+
+  <title> 数据库事务隔离级别 | 张恒强的博客 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-84023057-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?ba5aa61b835cc26eb755e8200cefe114";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">张恒强的博客</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">专注技术三十年</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                数据库事务隔离级别
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-09-16T22:26:07+08:00" content="2016-09-16">
+              2016-09-16
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/数据库/" itemprop="url" rel="index">
+                    <span itemprop="name">数据库</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/09/16/database-transaction-level/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/09/16/database-transaction-level/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>  S QL:1992 事务隔离级别，InnoDB默认是可重复读的（REPEATABLE READ）。MySQL/InnoDB 提供SQL标准所描述的所有四个事务隔离级别。你可以在命令行用–transaction-isolation选项，或在选项文件里，为所有连接设置默认隔离级别。<br>例如，你可以在my.inf文件的[mysqld]节里类似如下设置该选项：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">transaction-isolation = [ READ-UNCOMMITTED | READ-COMMITTED | REPEATABLE-READ | SERIALIZEABLE]</div></pre></td></tr></table></figure></p>
+<p>用户可以用SET TRANSACTION语句改变单个会话或者所有新进连接的隔离级别。它的语法如下：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SET</span> [<span class="keyword">SESSION</span> | <span class="keyword">GLOBAL</span>] <span class="keyword">TRANSACTION</span> <span class="keyword">ISOLATION</span> <span class="keyword">LEVEL</span> [ <span class="keyword">READ</span> UNCOMMITTED | <span class="keyword">READ</span> COMMITTED | REPEATABLE <span class="keyword">READ</span> | <span class="keyword">SERIALIZABLE</span>]</div></pre></td></tr></table></figure></p>
+<p>注意：默认的行为（不带session和global）是为下一个（未开始）事务设置隔离级别。如果你使用GLOBAL关键字，语句在全局对从那点开始创建的所有新连接（除了不存在的连接）设置默认事务级别。你需要SUPER权限来做这个。使用SESSION 关键字为将来在当前连接上执行的事务设置默认事务级别。 任何客户端都能自由改变会话隔离级别（甚至在事务的中间），或者为下一个事务设置隔离级别。</p>
+<p>查看全局和绘画事务隔离界别:<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">select</span> @@global.tx_isolation;</div><div class="line"><span class="keyword">select</span> @@session.tx_isolation;</div><div class="line"><span class="keyword">select</span> @@tx_isolation;</div></pre></td></tr></table></figure></p>
+<h3 id="数据库读数据问题概念"><a href="#数据库读数据问题概念" class="headerlink" title="数据库读数据问题概念"></a>数据库读数据问题概念</h3><ol>
+<li><strong>脏读（Dirty Reads）</strong><br> 所谓脏读就是对脏数据（Drity Data）的读取，而脏数据所指的就是未提交的数据。也就是说，一个事务正在对一条记录做修改，在这个事务完成并提交之前，这条数据是处于待定状态的（可能提交也可能回滚），这<br>时，第二个事务来读取这条没有提交的数据，并据此做进一步的处理，就会产生未提交的数据依赖关系。这种现象被称为脏读</li>
+<li><strong>不可重复读（Non-Repeatable Reads）</strong><br> 一个事务先后读取同一条记录，但两次读取的数据不同，我们称之为不可重复读。也就是说，这个事务在两次读取之间该数据被其它事务所修改</li>
+<li><strong>幻读（Phantom Reads）</strong><br> 一个事务按相同的查询条件重新读取以前检索过的数据，却发现其他事务插入了满足其查询条件的新数据，这种现象就称为幻读</li>
+</ol>
+<h3 id="数据库事务隔离级别"><a href="#数据库事务隔离级别" class="headerlink" title="数据库事务隔离级别"></a>数据库事务隔离级别</h3><ol>
+<li><strong>未提交读（Read Uncommitted）</strong><br> SELECT语句以非锁定方式被执行，所以有可能读到脏数据，隔离级别最低</li>
+<li><strong>提交读（Read Committed）</strong><br> 只能读取到已经提交的数据。即解决了脏读，但未解决不可重复读</li>
+<li><strong>可重复读（Repeated Read）</strong><br> 在同一个事务内的查询都是事务开始时刻一致的，InnoDB的默认级别。在SQL标准中，该隔离级别消除了不可重复读，但是还存在幻读</li>
+<li><strong>串行读（Serializable）</strong><br> 完全的串行化读，所有SELECT语句都被隐式的转换成SELECT … LOCK IN SHARE MODE，即读取使用表级共享锁，读写相互都会阻塞。隔离级别最高</li>
+</ol>
+<p>隔离级别对照表</p>
+<table>
+<thead>
+<tr>
+<th>事务级别</th>
+<th>脏读</th>
+<th>可重复读</th>
+<th>幻读</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>未提交读</td>
+<td><font color="red">未解决</font></td>
+<td><font color="red">未解决</font></td>
+<td><font color="red">未解决</font></td>
+</tr>
+<tr>
+<td>提交读</td>
+<td><font color="green">解决</font></td>
+<td><font color="red">未解决</font></td>
+<td><font color="red">未解决</font></td>
+</tr>
+<tr>
+<td>可重复读</td>
+<td><font color="green">解决</font></td>
+<td><font color="green">解决</font></td>
+<td><font color="red">未解决</font></td>
+</tr>
+<tr>
+<td>串行读</td>
+<td><font color="green">解决</font></td>
+<td><font color="green">解决</font></td>
+<td><font color="green">解决</font></td>
+</tr>
+</tbody>
+</table>
+<h3 id="举例说明各级别情况"><a href="#举例说明各级别情况" class="headerlink" title="举例说明各级别情况"></a>举例说明各级别情况</h3><h4 id="1-脏读。脏读就是指当一个事务正在访问数据，并且对数据进行了修改，而这种修改还没有提交到数据库中，这时，另外一个事务也访问这个数据，然后使用了这个数据"><a href="#1-脏读。脏读就是指当一个事务正在访问数据，并且对数据进行了修改，而这种修改还没有提交到数据库中，这时，另外一个事务也访问这个数据，然后使用了这个数据" class="headerlink" title="1. 脏读。脏读就是指当一个事务正在访问数据，并且对数据进行了修改，而这种修改还没有提交到数据库中，这时，另外一个事务也访问这个数据，然后使用了这个数据"></a>1. 脏读。脏读就是指当一个事务正在访问数据，并且对数据进行了修改，而这种修改还没有提交到数据库中，这时，另外一个事务也访问这个数据，然后使用了这个数据</h4><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div></pre></td><td class="code"><pre><div class="line">session 1:</div><div class="line">mysql&gt; select @@global.tx_isolation;</div><div class="line">+-----------------------+</div><div class="line">| @@global.tx_isolation |</div><div class="line">+-----------------------+</div><div class="line">| REPEATABLE-READ       |</div><div class="line">+-----------------------+</div><div class="line">row in set (0.00 sec)</div><div class="line"></div><div class="line">mysql&gt; select @@session.tx_isolation;</div><div class="line">+-----------------------+</div><div class="line">| @@session.tx_isolation |</div><div class="line">+-----------------------+</div><div class="line">| REPEATABLE-READ       |</div><div class="line">+-----------------------+</div><div class="line">row in set (0.00 sec)</div><div class="line"></div><div class="line">mysql&gt; start transaction;</div><div class="line">Query OK, 0 rows affected (0.00 sec)</div><div class="line"></div><div class="line">mysql&gt; insert into ttd values(1);</div><div class="line">Query OK, 1 row affected (0.05 sec)</div><div class="line"></div><div class="line">mysql&gt; select * from ttd;</div><div class="line">+------+</div><div class="line">| id   |</div><div class="line">+------+</div><div class="line">|    1 |</div><div class="line">+------+</div><div class="line">row in set (0.00 sec)</div><div class="line"></div><div class="line">session 2:</div><div class="line">mysql&gt; select @@session.tx_isolation;</div><div class="line">+------------------------+</div><div class="line">| @@session.tx_isolation |</div><div class="line">+------------------------+</div><div class="line">| REPEATABLE-READ        |</div><div class="line">+------------------------+</div><div class="line">row in set (0.00 sec)</div><div class="line"></div><div class="line">mysql&gt; select @@global.tx_isolation;</div><div class="line">+-----------------------+</div><div class="line">| @@global.tx_isolation |</div><div class="line">+-----------------------+</div><div class="line">| REPEATABLE-READ   |        --------该隔离级别下(除了 read uncommitted)</div><div class="line">+-----------------------+</div><div class="line">row in set (0.00 sec)</div><div class="line"></div><div class="line">mysql&gt; select * from ttd;</div><div class="line">Empty set (0.00 sec)              --------不会出现脏读</div><div class="line"></div><div class="line">mysql&gt; set session transaction isolation level read uncommitted;</div><div class="line">Query OK, 0 rows affected (0.00 sec)</div><div class="line"></div><div class="line">mysql&gt; select @@session.tx_isolation;</div><div class="line">+------------------------+</div><div class="line">| @@session.tx_isolation |</div><div class="line">+------------------------+</div><div class="line">| READ-UNCOMMITTED       |   --------该隔离级别下</div><div class="line">+------------------------+</div><div class="line">row in set (0.00 sec)</div><div class="line"></div><div class="line">mysql&gt; select * from ttd;</div><div class="line">+------+</div><div class="line">| id   |</div><div class="line">+------+</div><div class="line">|    1 |                                       --------READ UNCOMMITTED级别出现脏读</div><div class="line"></div><div class="line">+------+</div><div class="line">row in set (0.00 sec)</div></pre></td></tr></table></figure>
+<p><code>结论</code>:session 2 在READ-UNCOMMITTED 下读取到session 1 中未提交事务修改的数据.</p>
+<h4 id="2-不可重复读：是指在一个事务内，多次读同一数据。在这个事务还没有结束时，另外一个事务也访问该同一数据。那么，在第一个事务中的两次读数据之间，由于第二个事务的修改，那么第一个事务两次读到的的数据可能是不一样的。这样就发生了在一个事务内两次读到的数据是不一样的，因此称为是不可重复读。防止了脏读，即读取不到未提交的更改，但是可以读取到提交之后的更改。因此不能重复读，因为两次读取的结果不一致"><a href="#2-不可重复读：是指在一个事务内，多次读同一数据。在这个事务还没有结束时，另外一个事务也访问该同一数据。那么，在第一个事务中的两次读数据之间，由于第二个事务的修改，那么第一个事务两次读到的的数据可能是不一样的。这样就发生了在一个事务内两次读到的数据是不一样的，因此称为是不可重复读。防止了脏读，即读取不到未提交的更改，但是可以读取到提交之后的更改。因此不能重复读，因为两次读取的结果不一致" class="headerlink" title="2. 不可重复读：是指在一个事务内，多次读同一数据。在这个事务还没有结束时，另外一个事务也访问该同一数据。那么，在第一个事务中的两次读数据之间，由于第二个事务的修改，那么第一个事务两次读到的的数据可能是不一样的。这样就发生了在一个事务内两次读到的数据是不一样的，因此称为是不可重复读。防止了脏读，即读取不到未提交的更改，但是可以读取到提交之后的更改。因此不能重复读，因为两次读取的结果不一致"></a>2. 不可重复读：是指在一个事务内，多次读同一数据。在这个事务还没有结束时，另外一个事务也访问该同一数据。那么，在第一个事务中的两次读数据之间，由于第二个事务的修改，那么第一个事务两次读到的的数据可能是不一样的。这样就发生了在一个事务内两次读到的数据是不一样的，因此称为是不可重复读。防止了脏读，即读取不到未提交的更改，但是可以读取到提交之后的更改。因此不能重复读，因为两次读取的结果不一致</h4><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div></pre></td><td class="code"><pre><div class="line">session 1:</div><div class="line">mysql&gt; select @@session.tx_isolation;</div><div class="line">+------------------------+</div><div class="line">| @@session.tx_isolation |</div><div class="line">+------------------------+</div><div class="line">| READ-COMMITTED         |</div><div class="line">+------------------------+</div><div class="line">row in set (0.00 sec)</div><div class="line"></div><div class="line">mysql&gt; start transaction;</div><div class="line">Query OK, 0 rows affected (0.00 sec)</div><div class="line"></div><div class="line">mysql&gt; select * from ttd;</div><div class="line">+------+</div><div class="line">| id   |</div><div class="line">+------+</div><div class="line">|    1 |</div><div class="line">+------+</div><div class="line">row in set (0.00 sec)</div><div class="line"></div><div class="line">session 2 :</div><div class="line"></div><div class="line">mysql&gt; select @@session.tx_isolation;</div><div class="line">+------------------------+</div><div class="line">| @@session.tx_isolation |</div><div class="line">+------------------------+</div><div class="line">| REPEATABLE-READ        |</div><div class="line">+------------------------+</div><div class="line">row in set (0.00 sec)</div><div class="line"></div><div class="line">mysql&gt; start transaction;</div><div class="line">Query OK, 0 rows affected (0.00 sec)</div><div class="line"></div><div class="line">mysql&gt; select * from ttd;</div><div class="line">+------+</div><div class="line">| id   |</div><div class="line">+------+</div><div class="line">|    1 |</div><div class="line">+------+</div><div class="line">row in set (0.00 sec)</div><div class="line"></div><div class="line">mysql&gt; insert into ttd values(2);  /也可以更新数据</div><div class="line">Query OK, 1 row affected (0.00 sec)</div><div class="line"></div><div class="line">mysql&gt; select * from ttd;</div><div class="line">+------+</div><div class="line">| id   |</div><div class="line">+------+</div><div class="line">|    1 |</div><div class="line">|    2 |</div><div class="line">+------+</div><div class="line">rows in set (0.00 sec)</div><div class="line"></div><div class="line">mysql&gt; commit;</div><div class="line">Query OK, 0 rows affected (0.02 sec)</div><div class="line"></div><div class="line">session 2 提交后,查看session 1 的结果;</div><div class="line"></div><div class="line">session 1:</div><div class="line"></div><div class="line">mysql&gt; select * from ttd;</div><div class="line">+------+</div><div class="line">| id   |</div><div class="line">+------+</div><div class="line">|    1 |                             --------和第一次的结果不一样,READ-COMMITTED 级别出现了不重复读</div><div class="line">|    2 |</div><div class="line">+------+</div><div class="line">rows in set (0.00 sec)</div></pre></td></tr></table></figure>
+<h4 id="3-可重复读：repeatable-read级别，防止了不可重复读，但是相应的也读取不到了开始事务之后其他事务的提交。"><a href="#3-可重复读：repeatable-read级别，防止了不可重复读，但是相应的也读取不到了开始事务之后其他事务的提交。" class="headerlink" title="3. 可重复读：repeatable-read级别，防止了不可重复读，但是相应的也读取不到了开始事务之后其他事务的提交。"></a>3. 可重复读：repeatable-read级别，防止了不可重复读，但是相应的也读取不到了开始事务之后其他事务的提交。</h4><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div></pre></td><td class="code"><pre><div class="line">session 1:</div><div class="line">mysql&gt; select @@session.tx_isolation;</div><div class="line">+------------------------+</div><div class="line">| @@session.tx_isolation |</div><div class="line">+------------------------+</div><div class="line">| REPEATABLE-READ        |</div><div class="line">+------------------------+</div><div class="line">row in set (0.00 sec)</div><div class="line"></div><div class="line">mysql&gt; start transaction;</div><div class="line">Query OK, 0 rows affected (0.00 sec)</div><div class="line"></div><div class="line">mysql&gt; select * from ttd;</div><div class="line">+------+</div><div class="line">| id   |</div><div class="line">+------+</div><div class="line">|    1 |</div><div class="line">|    2 |</div><div class="line">+------+</div><div class="line">rows in set (0.00 sec)</div><div class="line"></div><div class="line">session 2 :</div><div class="line"></div><div class="line">mysql&gt; select @@session.tx_isolation;</div><div class="line">+------------------------+</div><div class="line">| @@session.tx_isolation |</div><div class="line">+------------------------+</div><div class="line">| REPEATABLE-READ        |</div><div class="line">+------------------------+</div><div class="line">row in set (0.00 sec)</div><div class="line"></div><div class="line">mysql&gt; start transaction;</div><div class="line">Query OK, 0 rows affected (0.00 sec)</div><div class="line"></div><div class="line">mysql&gt; insert into ttd values(3);</div><div class="line">Query OK, 1 row affected (0.00 sec)</div><div class="line"></div><div class="line">mysql&gt; commit;</div><div class="line">Query OK, 0 rows affected (0.03 sec)</div><div class="line"></div><div class="line">session 2 提交后,查看session 1 的结果;</div><div class="line"></div><div class="line">session 1:</div><div class="line"></div><div class="line">mysql&gt; select * from ttd;</div><div class="line">+------+</div><div class="line">| id   |</div><div class="line">+------+</div><div class="line">|    1 |                                      --------和第一次的结果一样,REPEATABLE-READ级别出现了重复读</div><div class="line">|    2 |</div><div class="line">+------+</div><div class="line">rows in set (0.00 sec)</div><div class="line"></div><div class="line">(commit session 1 之后 再select * from ttd 可以看到session 2 插入的数据3)</div></pre></td></tr></table></figure>
+<h4 id="4-幻读-因为读取不到其他事务提交的结果，所以出现了幻读，"><a href="#4-幻读-因为读取不到其他事务提交的结果，所以出现了幻读，" class="headerlink" title="4.幻读: 因为读取不到其他事务提交的结果，所以出现了幻读，"></a>4.幻读: 因为读取不到其他事务提交的结果，所以出现了幻读，</h4><p>第一个事务对一个表中的数据进行了修改，这种修改涉及到表中的全部数据行。同时，第二个事务也修改这个表中的数据，这种修改是向表中插入一行新数据。那么，以后就会发生操作第一个事务的用户发现表中还有没有修改的数据行，就好象发生了幻觉一样</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div></pre></td><td class="code"><pre><div class="line">mysql&gt;CREATE TABLE `t_bitfly` (</div><div class="line">`id` bigint(20) NOT NULL default '0',</div><div class="line">`value` varchar(32) default NULL,</div><div class="line">PRIMARY KEY (`id`)</div><div class="line">) ENGINE=InnoDB</div><div class="line"></div><div class="line">mysql&gt; select @@global.tx_isolation, @@tx_isolation;</div><div class="line">+-----------------------+-----------------+</div><div class="line">| @@global.tx_isolation | @@tx_isolation  |</div><div class="line">+-----------------------+-----------------+</div><div class="line">| REPEATABLE-READ       | REPEATABLE-READ |</div><div class="line">+-----------------------+-----------------+</div><div class="line"></div><div class="line">实验一：</div><div class="line"></div><div class="line">t Session A                   Session B</div><div class="line">|</div><div class="line">| START TRANSACTION;          START TRANSACTION;</div><div class="line">|</div><div class="line">| SELECT * FROM t_bitfly;</div><div class="line">| empty set</div><div class="line">|                             INSERT INTO t_bitfly</div><div class="line">|                             VALUES (1, 'a');</div><div class="line">|</div><div class="line">| SELECT * FROM t_bitfly;</div><div class="line">| empty set</div><div class="line">|                             COMMIT;</div><div class="line">|</div><div class="line">| SELECT * FROM t_bitfly;</div><div class="line">| empty set</div><div class="line">|</div><div class="line">| INSERT INTO t_bitfly VALUES (1, 'a');</div><div class="line">| ERROR 1062 (23000):</div><div class="line">| Duplicate entry '1' for key 1</div><div class="line">v (shit, 刚刚明明告诉我没有这条记录的)</div><div class="line"></div><div class="line">如此就出现了幻读，以为表里没有数据，其实数据已经存在了，傻乎乎的提交后，才发现数据冲突了。</div><div class="line"></div><div class="line">实验二：</div><div class="line"></div><div class="line">t Session A                  Session B</div><div class="line">|</div><div class="line">| START TRANSACTION;         START TRANSACTION;</div><div class="line">|</div><div class="line">| SELECT * FROM t_bitfly;</div><div class="line">| +------+-------+</div><div class="line">| | id   | value |</div><div class="line">| +------+-------+</div><div class="line">| |    1 | a     |</div><div class="line">| +------+-------+</div><div class="line">|                            INSERT INTO t_bitfly</div><div class="line">|                            VALUES (2, 'b');</div><div class="line">|</div><div class="line">| SELECT * FROM t_bitfly;</div><div class="line">| +------+-------+</div><div class="line">| | id   | value |</div><div class="line">| +------+-------+</div><div class="line">| |    1 | a     |</div><div class="line">| +------+-------+</div><div class="line">|                            COMMIT;</div><div class="line">|</div><div class="line">| SELECT * FROM t_bitfly;</div><div class="line">| +------+-------+</div><div class="line">| | id   | value |</div><div class="line">| +------+-------+</div><div class="line">| |    1 | a     |</div><div class="line">| +------+-------+</div><div class="line">|</div><div class="line">| UPDATE t_bitfly SET value='z';</div><div class="line">| Rows matched: 2  Changed: 2  Warnings: 0</div><div class="line">| (怎么多出来一行)</div><div class="line">|</div><div class="line">| SELECT * FROM t_bitfly;</div><div class="line">| +------+-------+</div><div class="line">| | id   | value |</div><div class="line">| +------+-------+</div><div class="line">| |    1 | z     |</div><div class="line">| |    2 | z     |</div><div class="line">| +------+-------+</div></pre></td></tr></table></figure>
+<p>本事务中第一次读取出一行，做了一次更新后，另一个事务里提交的数据就出现了。也可以看做是一种幻读。<br>当隔离级别是可重复读，且禁用innodb_locks_unsafe_for_binlog的情况下，在搜索和扫描index的时候使用的next-key locks可以避免幻读</p>
+<p>再看一个实验，要注意，表t_bitfly里的id为主键字段<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line">实验三：</div><div class="line">t Session A                 Session B</div><div class="line">|</div><div class="line">| <span class="keyword">START</span> <span class="keyword">TRANSACTION</span>;        <span class="keyword">START</span> <span class="keyword">TRANSACTION</span>;</div><div class="line">|</div><div class="line">| <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> t_bitfly</div><div class="line">| <span class="keyword">WHERE</span> <span class="keyword">id</span>&lt;=<span class="number">1</span></div><div class="line">| <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</div><div class="line">| +<span class="comment">------+-------+</span></div><div class="line">| | id   | value |</div><div class="line">| +<span class="comment">------+-------+</span></div><div class="line">| |    1 | a     |</div><div class="line">| +<span class="comment">------+-------+</span></div><div class="line">|                           <span class="keyword">INSERT</span> <span class="keyword">INTO</span> t_bitfly</div><div class="line">|                           <span class="keyword">VALUES</span> (<span class="number">2</span>, <span class="string">'b'</span>);</div><div class="line">|                           Query OK, 1 row affected</div><div class="line">|</div><div class="line">| <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> t_bitfly;</div><div class="line">| +<span class="comment">------+-------+</span></div><div class="line">| | id   | value |</div><div class="line">| +<span class="comment">------+-------+</span></div><div class="line">| |    1 | a     |</div><div class="line">| +<span class="comment">------+-------+</span></div><div class="line">|                           <span class="keyword">INSERT</span> <span class="keyword">INTO</span> t_bitfly</div><div class="line">|                           <span class="keyword">VALUES</span> (<span class="number">0</span>, <span class="string">'0'</span>);</div><div class="line">|                           (waiting for <span class="keyword">lock</span> ...then <span class="keyword">timeout</span>)</div><div class="line">|                           <span class="keyword">ERROR</span> <span class="number">1205</span> (HY000):</div><div class="line">|                           <span class="keyword">Lock</span> <span class="keyword">wait</span> <span class="keyword">timeout</span> exceeded;</div><div class="line">|                           try restarting transaction</div><div class="line">|</div><div class="line">| <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> t_bitfly;</div><div class="line">| +<span class="comment">------+-------+</span></div><div class="line">| | id   | value |</div><div class="line">| +<span class="comment">------+-------+</span></div><div class="line">| |    1 | a     |</div><div class="line">| +<span class="comment">------+-------+</span></div><div class="line">|                           <span class="keyword">COMMIT</span>;</div><div class="line">|</div><div class="line">| <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> t_bitfly;</div><div class="line"></div><div class="line">| +<span class="comment">------+-------+</span></div><div class="line">| | id   | value |</div><div class="line">| +<span class="comment">------+-------+</span></div><div class="line">| |    1 | a     |</div><div class="line">| +<span class="comment">------+-------+</span></div></pre></td></tr></table></figure></p>
+<p>可以看到，用id&lt;=1加的锁，只锁住了id&lt;=1的范围，可以成功添加id为2的记录，添加id为0的记录时就会等待锁的释放<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line">实验四：一致性读和提交读</div><div class="line">t Session A                      Session B</div><div class="line">|</div><div class="line">| <span class="keyword">START</span> <span class="keyword">TRANSACTION</span>;             <span class="keyword">START</span> <span class="keyword">TRANSACTION</span>;</div><div class="line">|</div><div class="line">| <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> t_bitfly;</div><div class="line">| +<span class="comment">----+-------+</span></div><div class="line">| | id | value |</div><div class="line">| +<span class="comment">----+-------+</span></div><div class="line">| |  1 | a     |</div><div class="line">| +<span class="comment">----+-------+</span></div><div class="line">|                                <span class="keyword">INSERT</span> <span class="keyword">INTO</span> t_bitfly</div><div class="line">|                                <span class="keyword">VALUES</span> (<span class="number">2</span>, <span class="string">'b'</span>);</div><div class="line">|                                <span class="keyword">COMMIT</span>;</div><div class="line">|</div><div class="line">| <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> t_bitfly;</div><div class="line">| +<span class="comment">----+-------+</span></div><div class="line">| | id | value |</div><div class="line">| +<span class="comment">----+-------+</span></div><div class="line">| |  1 | a     |</div><div class="line">| +<span class="comment">----+-------+</span></div><div class="line">|</div><div class="line">| <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> t_bitfly <span class="keyword">LOCK</span> <span class="keyword">IN</span> <span class="keyword">SHARE</span> <span class="keyword">MODE</span>;</div><div class="line">| +<span class="comment">----+-------+</span></div><div class="line">| | id | value |</div><div class="line">| +<span class="comment">----+-------+</span></div><div class="line">| |  1 | a     |</div><div class="line">| |  2 | b     |</div><div class="line">| +<span class="comment">----+-------+</span></div><div class="line">|</div><div class="line">| <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> t_bitfly <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</div><div class="line">| +<span class="comment">----+-------+</span></div><div class="line">| | id | value |</div><div class="line">| +<span class="comment">----+-------+</span></div><div class="line">| |  1 | a     |</div><div class="line">| |  2 | b     |</div><div class="line">| +<span class="comment">----+-------+</span></div><div class="line">|</div><div class="line">| <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> t_bitfly;</div><div class="line">| +<span class="comment">----+-------+</span></div><div class="line">| | id | value |</div><div class="line">| +<span class="comment">----+-------+</span></div><div class="line">| |  1 | a     |</div><div class="line">| +<span class="comment">----+-------+</span></div></pre></td></tr></table></figure></p>
+<p>如果使用普通的读，会得到一致性的结果，如果使用了加锁的读，就会读到“最新的”“提交”读的结果。</p>
+<p>本身，可重复读和提交读是矛盾的。在同一个事务里，如果保证了可重复读，就会看不到其他事务的提交，违背了提交读；如果保证了提交读，就会导致前后两次读到的结果不一致，违背了可重复读。</p>
+<p>可以这么讲，InnoDB提供了这样的机制，在默认的可重复读的隔离级别里，可以使用加锁读去查询最新的数据（提交读）。<br>MySQL InnoDB的可重复读并不保证避免幻读，需要应用使用加锁读来保证。而这个加锁度使用到的机制就是next-key locks。</p>
+<p>总结:</p>
+<p>四个级别逐渐增强，每个级别解决一个问题。事务级别越高,性能越差,大多数环境read committed 可以用.记住4个隔离级别的特点(上面的例子);</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+<div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/images/wechat.jpg" alt="张恒强 wechat" style="width: 200px; max-width: 100%;"/>
+    <div>ex. subscribe to my blog by scanning my public wechat account</div>
+</div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/数据库/" rel="tag">#数据库</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/09/16/database-acid/" rel="next" title="数据库事务的ACID属性及隔离级别">
+                <i class="fa fa-chevron-left"></i> 数据库事务的ACID属性及隔离级别
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/09/16/database-pcc/" rel="prev" title="mysql 悲观锁">
+                mysql 悲观锁 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/09/16/database-transaction-level/"
+           data-title="数据库事务隔离级别" data-url="https://zhanghqgit.github.io/2016/09/16/database-transaction-level/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/wolf.jpg"
+               alt="张恒强" />
+          <p class="site-author-name" itemprop="name">张恒强</p>
+          <p class="site-description motion-element" itemprop="description">随意而写，记录随笔生活</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/zhanghqgit" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/zhanghq0717" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1875925363?is_hot=1" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.facebook.com/profile.php?id=100012438675279" target="_blank" title="facebook">
+                  
+                    <i class="fa fa-fw fa-facebook"></i>
+                  
+                  facebook
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库读数据问题概念"><span class="nav-number">1.</span> <span class="nav-text">数据库读数据问题概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库事务隔离级别"><span class="nav-number">2.</span> <span class="nav-text">数据库事务隔离级别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#举例说明各级别情况"><span class="nav-number">3.</span> <span class="nav-text">举例说明各级别情况</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-脏读。脏读就是指当一个事务正在访问数据，并且对数据进行了修改，而这种修改还没有提交到数据库中，这时，另外一个事务也访问这个数据，然后使用了这个数据"><span class="nav-number">3.1.</span> <span class="nav-text">1. 脏读。脏读就是指当一个事务正在访问数据，并且对数据进行了修改，而这种修改还没有提交到数据库中，这时，另外一个事务也访问这个数据，然后使用了这个数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-不可重复读：是指在一个事务内，多次读同一数据。在这个事务还没有结束时，另外一个事务也访问该同一数据。那么，在第一个事务中的两次读数据之间，由于第二个事务的修改，那么第一个事务两次读到的的数据可能是不一样的。这样就发生了在一个事务内两次读到的数据是不一样的，因此称为是不可重复读。防止了脏读，即读取不到未提交的更改，但是可以读取到提交之后的更改。因此不能重复读，因为两次读取的结果不一致"><span class="nav-number">3.2.</span> <span class="nav-text">2. 不可重复读：是指在一个事务内，多次读同一数据。在这个事务还没有结束时，另外一个事务也访问该同一数据。那么，在第一个事务中的两次读数据之间，由于第二个事务的修改，那么第一个事务两次读到的的数据可能是不一样的。这样就发生了在一个事务内两次读到的数据是不一样的，因此称为是不可重复读。防止了脏读，即读取不到未提交的更改，但是可以读取到提交之后的更改。因此不能重复读，因为两次读取的结果不一致</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-可重复读：repeatable-read级别，防止了不可重复读，但是相应的也读取不到了开始事务之后其他事务的提交。"><span class="nav-number">3.3.</span> <span class="nav-text">3. 可重复读：repeatable-read级别，防止了不可重复读，但是相应的也读取不到了开始事务之后其他事务的提交。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-幻读-因为读取不到其他事务提交的结果，所以出现了幻读，"><span class="nav-number">3.4.</span> <span class="nav-text">4.幻读: 因为读取不到其他事务提交的结果，所以出现了幻读，</span></a></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张恒强</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"zhanghq"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

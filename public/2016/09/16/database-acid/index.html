@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="数据库," />
 
 
 
@@ -84,19 +84,25 @@
 
 
 
-<meta name="description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
-Quick">
+<meta name="description" content="数据库事务的属性ACID
+原子性（Atomicity） 所谓原子性就是将一组操作作为一个操作单元，是原子操作，即要么全部执行，要么全部不执行
+ 一致性（Consistency） 事务的一致性指的是在一个事务执行之前和执行之后数据库都必须处于一致性状态。如果事务成功地完成，那么系统中所有变化将正确地应用，系统处于有效状态。如果在事务中出现错误，那么系统中的所有变化将自动地回滚，系统返回到原始状态
+隔">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hello World">
-<meta property="og:url" content="https://zhanghqgit.github.io/2016/09/06/hello-world/index.html">
+<meta property="og:title" content="数据库事务的ACID属性及隔离级别">
+<meta property="og:url" content="https://zhanghqgit.github.io/2016/09/16/database-acid/index.html">
 <meta property="og:site_name" content="张恒强的博客">
-<meta property="og:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
-Quick">
-<meta property="og:updated_time" content="2016-09-06T15:46:35.000Z">
+<meta property="og:description" content="数据库事务的属性ACID
+原子性（Atomicity） 所谓原子性就是将一组操作作为一个操作单元，是原子操作，即要么全部执行，要么全部不执行
+ 一致性（Consistency） 事务的一致性指的是在一个事务执行之前和执行之后数据库都必须处于一致性状态。如果事务成功地完成，那么系统中所有变化将正确地应用，系统处于有效状态。如果在事务中出现错误，那么系统中的所有变化将自动地回滚，系统返回到原始状态
+隔">
+<meta property="og:updated_time" content="2016-09-16T10:00:25.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hello World">
-<meta name="twitter:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
-Quick">
+<meta name="twitter:title" content="数据库事务的ACID属性及隔离级别">
+<meta name="twitter:description" content="数据库事务的属性ACID
+原子性（Atomicity） 所谓原子性就是将一组操作作为一个操作单元，是原子操作，即要么全部执行，要么全部不执行
+ 一致性（Consistency） 事务的一致性指的是在一个事务执行之前和执行之后数据库都必须处于一致性状态。如果事务成功地完成，那么系统中所有变化将正确地应用，系统处于有效状态。如果在事务中出现错误，那么系统中的所有变化将自动地回滚，系统返回到原始状态
+隔">
 
 
 
@@ -117,9 +123,9 @@ Quick">
 
 
 
-  <link rel="canonical" href="https://zhanghqgit.github.io/2016/09/06/hello-world/"/>
+  <link rel="canonical" href="https://zhanghqgit.github.io/2016/09/16/database-acid/"/>
 
-  <title> Hello World | 张恒强的博客 </title>
+  <title> 数据库事务的ACID属性及隔离级别 | 张恒强的博客 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -248,7 +254,7 @@ Quick">
             
             
               
-                Hello World
+                数据库事务的ACID属性及隔离级别
               
             
           </h1>
@@ -260,19 +266,38 @@ Quick">
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-09-06T23:46:35+08:00" content="2016-09-06">
-              2016-09-06
+            <time itemprop="dateCreated" datetime="2016-09-16T17:35:54+08:00" content="2016-09-16">
+              2016-09-16
             </time>
           </span>
 
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/数据库/" itemprop="url" rel="index">
+                    <span itemprop="name">数据库</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
           
 
           
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/09/06/hello-world/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/09/06/hello-world/" itemprop="commentsCount"></span>
+                <a href="/2016/09/16/database-acid/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/09/16/database-acid/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -295,15 +320,60 @@ Quick">
       
 
       
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
+        <h3 id="数据库事务的属性ACID"><a href="#数据库事务的属性ACID" class="headerlink" title="数据库事务的属性ACID"></a>数据库事务的属性ACID</h3><ol>
+<li><strong>原子性（Atomicity）</strong><br> 所谓原子性就是将一组操作作为一个操作单元，是原子操作，即要么全部执行，要么全部不执行</li>
+<li><strong> 一致性（Consistency）</strong><br> 事务的一致性指的是在一个事务执行之前和执行之后数据库都必须处于一致性状态。如果事务成功地完成，那么系统中所有变化将正确地应用，系统处于有效状态。如果在事务中出现错误，那么系统中的所有变化将自动地回滚，系统返回到原始状态</li>
+<li><strong>隔离性（Isolation）</strong><br> 隔离性指并发的事务是相互隔离的。即一个事务内部的操作及正在操作的数据必须封锁起来，不被其它企图进行修改的事务看到。</li>
+<li><strong>持久性（Durability）</strong><br> 持久性是指一个事务一旦被提交，它对数据库中数据的改变就是永久性的，接下来的其他操作和数据库故障不应该对其有任何影响。即一旦一个事务提交，DBMS（Database Management System）保证它对数据库中数据的改变应该是永久性的，持久性通过数据库备份和恢复来保证</li>
+</ol>
+<h3 id="数据库读数据问题概念"><a href="#数据库读数据问题概念" class="headerlink" title="数据库读数据问题概念"></a>数据库读数据问题概念</h3><ol>
+<li><strong>脏读（Dirty Reads）</strong><br> 所谓脏读就是对脏数据（Drity Data）的读取，而脏数据所指的就是未提交的数据。也就是说，一个事务正在对一条记录做修改，在这个事务完成并提交之前，这条数据是处于待定状态的（可能提交也可能回滚），这时，第二个事务来读取这条没有提交的数据，并据此做进一步的处理，就会产生未提交的数据依赖关系。这种现象被称为脏读</li>
+<li><strong>不可重复读（Non-Repeatable Reads）</strong><br> 一个事务先后读取同一条记录，但两次读取的数据不同，我们称之为不可重复读。也就是说，这个事务在两次读取之间该数据被其它事务所修改</li>
+<li><strong>幻读（Phantom Reads）</strong><br> 一个事务按相同的查询条件重新读取以前检索过的数据，却发现其他事务插入了满足其查询条件的新数据，这种现象就称为幻读</li>
+</ol>
+<h3 id="数据库事务隔离级别"><a href="#数据库事务隔离级别" class="headerlink" title="数据库事务隔离级别"></a>数据库事务隔离级别</h3><ol>
+<li><strong>未提交读（Read Uncommitted）</strong><br> SELECT语句以非锁定方式被执行，所以有可能读到脏数据，隔离级别最低</li>
+<li><strong>提交读（Read Committed）</strong><br> 只能读取到已经提交的数据。即解决了脏读，但未解决不可重复读</li>
+<li><strong>可重复读（Repeated Read）</strong><br> 在同一个事务内的查询都是事务开始时刻一致的，InnoDB的默认级别。在SQL标准中，该隔离级别消除了不可重复读，但是还存在幻读</li>
+<li><strong>串行读（Serializable）</strong><br> 完全的串行化读，所有SELECT语句都被隐式的转换成SELECT … LOCK IN SHARE MODE，即读取使用表级共享锁，读写相互都会阻塞。隔离级别最高</li>
+</ol>
+<p>隔离级别对照表</p>
+<table>
+<thead>
+<tr>
+<th>事务级别</th>
+<th>脏读</th>
+<th>可重复读</th>
+<th>幻读</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>未提交读</td>
+<td><font color="red">未解决</font></td>
+<td><font color="red">未解决</font></td>
+<td><font color="red">未解决</font></td>
+</tr>
+<tr>
+<td>提交读</td>
+<td><font color="green">解决</font></td>
+<td><font color="red">未解决</font></td>
+<td><font color="red">未解决</font></td>
+</tr>
+<tr>
+<td>可重复读</td>
+<td><font color="green">解决</font></td>
+<td><font color="green">解决</font></td>
+<td><font color="red">未解决</font></td>
+</tr>
+<tr>
+<td>串行读</td>
+<td><font color="green">解决</font></td>
+<td><font color="green">解决</font></td>
+<td><font color="green">解决</font></td>
+</tr>
+</tbody>
+</table>
 
       
     </div>
@@ -329,17 +399,27 @@ Quick">
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/tags/数据库/" rel="tag">#数据库</a>
+          
+        </div>
+      
 
       
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2016/09/13/markdown-syntax3/" rel="next" title="markdown-syntax3">
+                <i class="fa fa-chevron-left"></i> markdown-syntax3
+              </a>
+            
           </div>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2016/09/07/markdown-syntax/" rel="prev" title="markdown-syntax markdown 语法示例 （一）">
-                markdown-syntax markdown 语法示例 （一） <i class="fa fa-chevron-right"></i>
+              <a href="/2016/09/16/database-transaction-level/" rel="prev" title="数据库事务隔离级别">
+                数据库事务隔离级别 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -366,8 +446,8 @@ Quick">
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/09/06/hello-world/"
-           data-title="Hello World" data-url="https://zhanghqgit.github.io/2016/09/06/hello-world/">
+      <div class="ds-thread" data-thread-key="2016/09/16/database-acid/"
+           data-title="数据库事务的ACID属性及隔离级别" data-url="https://zhanghqgit.github.io/2016/09/16/database-acid/">
       </div>
     
   </div>
@@ -496,7 +576,7 @@ Quick">
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Quick-Start"><span class="nav-number">1.</span> <span class="nav-text">Quick Start</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Create-a-new-post"><span class="nav-number">1.1.</span> <span class="nav-text">Create a new post</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Run-server"><span class="nav-number">1.2.</span> <span class="nav-text">Run server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Generate-static-files"><span class="nav-number">1.3.</span> <span class="nav-text">Generate static files</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Deploy-to-remote-sites"><span class="nav-number">1.4.</span> <span class="nav-text">Deploy to remote sites</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库事务的属性ACID"><span class="nav-number">1.</span> <span class="nav-text">数据库事务的属性ACID</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库读数据问题概念"><span class="nav-number">2.</span> <span class="nav-text">数据库读数据问题概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库事务隔离级别"><span class="nav-number">3.</span> <span class="nav-text">数据库事务隔离级别</span></a></li></ol></div>
             
           </div>
         </section>
