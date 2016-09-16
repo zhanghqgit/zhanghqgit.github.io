@@ -248,6 +248,179 @@
             
               
                 
+                <a class="post-title-link" href="/2016/09/16/database-acid/" itemprop="url">
+                  数据库事务的ACID属性及隔离级别
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-09-16T17:35:54+08:00" content="2016-09-16">
+              2016-09-16
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/数据库/" itemprop="url" rel="index">
+                    <span itemprop="name">数据库</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/09/16/database-acid/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/09/16/database-acid/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="数据库事务的属性ACID"><a href="#数据库事务的属性ACID" class="headerlink" title="数据库事务的属性ACID"></a>数据库事务的属性ACID</h3><ol>
+<li><strong>原子性（Atomicity）</strong><br> 所谓原子性就是将一组操作作为一个操作单元，是原子操作，即要么全部执行，要么全部不执行</li>
+<li><strong> 一致性（Consistency）</strong><br> 事务的一致性指的是在一个事务执行之前和执行之后数据库都必须处于一致性状态。如果事务成功地完成，那么系统中所有变化将正确地应用，系统处于有效状态。如果在事务中出现错误，那么系统中的所有变化将自动地回滚，系统返回到原始状态</li>
+<li><strong>隔离性（Isolation）</strong><br> 隔离性指并发的事务是相互隔离的。即一个事务内部的操作及正在操作的数据必须封锁起来，不被其它企图进行修改的事务看到。</li>
+<li><strong>持久性（Durability）</strong><br> 持久性是指一个事务一旦被提交，它对数据库中数据的改变就是永久性的，接下来的其他操作和数据库故障不应该对其有任何影响。即一旦一个事务提交，DBMS（Database Management System）保证它对数据库中数据的改变应该是永久性的，持久性通过数据库备份和恢复来保证</li>
+</ol>
+<h3 id="数据库读数据问题概念"><a href="#数据库读数据问题概念" class="headerlink" title="数据库读数据问题概念"></a>数据库读数据问题概念</h3><ol>
+<li><strong>脏读（Dirty Reads）</strong><br> 所谓脏读就是对脏数据（Drity Data）的读取，而脏数据所指的就是未提交的数据。也就是说，一个事务正在对一条记录做修改，在这个事务完成并提交之前，这条数据是处于待定状态的（可能提交也可能回滚），这时，第二个事务来读取这条没有提交的数据，并据此做进一步的处理，就会产生未提交的数据依赖关系。这种现象被称为脏读</li>
+<li><strong>不可重复读（Non-Repeatable Reads）</strong><br> 一个事务先后读取同一条记录，但两次读取的数据不同，我们称之为不可重复读。也就是说，这个事务在两次读取之间该数据被其它事务所修改</li>
+<li><strong>幻读（Phantom Reads）</strong><br> 一个事务按相同的查询条件重新读取以前检索过的数据，却发现其他事务插入了满足其查询条件的新数据，这种现象就称为幻读</li>
+</ol>
+<h3 id="数据库事务隔离级别"><a href="#数据库事务隔离级别" class="headerlink" title="数据库事务隔离级别"></a>数据库事务隔离级别</h3><ol>
+<li><strong>未提交读（Read Uncommitted）</strong><br> SELECT语句以非锁定方式被执行，所以有可能读到脏数据，隔离级别最低</li>
+<li><strong>提交读（Read Committed）</strong><br> 只能读取到已经提交的数据。即解决了脏读，但未解决不可重复读</li>
+<li><strong>可重复读（Repeated Read）</strong><br> 在同一个事务内的查询都是事务开始时刻一致的，InnoDB的默认级别。在SQL标准中，该隔离级别消除了不可重复读，但是还存在幻读</li>
+<li><strong>串行读（Serializable）</strong><br> 完全的串行化读，所有SELECT语句都被隐式的转换成SELECT … LOCK IN SHARE MODE，即读取使用表级共享锁，读写相互都会阻塞。隔离级别最高</li>
+</ol>
+<p>隔离级别对照表</p>
+<table>
+<thead>
+<tr>
+<th>事务级别</th>
+<th>脏读</th>
+<th>可重复读</th>
+<th>幻读</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>未提交读</td>
+<td><font color="red">未解决</font></td>
+<td><font color="red">未解决</font></td>
+<td><font color="red">未解决</font></td>
+</tr>
+<tr>
+<td>提交读</td>
+<td><font color="green">解决</font></td>
+<td><font color="red">未解决</font></td>
+<td><font color="red">未解决</font></td>
+</tr>
+<tr>
+<td>可重复读</td>
+<td><font color="green">解决</font></td>
+<td><font color="green">解决</font></td>
+<td><font color="red">未解决</font></td>
+</tr>
+<tr>
+<td>串行读</td>
+<td><font color="green">解决</font></td>
+<td><font color="green">解决</font></td>
+<td><font color="green">解决</font></td>
+</tr>
+</tbody>
+</table>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/09/13/markdown-syntax3/" itemprop="url">
                   markdown-syntax3
                 </a>
@@ -1087,7 +1260,7 @@ _   底线
 <p>右扩折号 &gt; 用来当做引用标记，<code>注意</code>：如果要使用源生&gt;,就需要使用转义符号<code>&amp;gt;</code></p>
 </blockquote>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&gt; 右扩折号 &amp;gt; 用来当做引用标记，`注意`：如果要使用源生&amp;gt;,就需要使用转义符号`&amp;gt;`</div></pre></td></tr></table></figure>
-<h3 id="链接和邮箱"><a href="#链接和邮箱" class="headerlink" title="链接和邮箱"></a>链接和邮箱</h3><p>简单的邮箱<a href="&#x6d;&#97;&#x69;&#108;&#x74;&#x6f;&#x3a;&#x65;&#x78;&#97;&#x6d;&#x70;&#x6c;&#101;&#64;&#x65;&#120;&#97;&#109;&#112;&#108;&#x65;&#x2e;&#99;&#x6f;&#x6d;">&#x65;&#x78;&#97;&#x6d;&#x70;&#x6c;&#101;&#64;&#x65;&#120;&#97;&#109;&#112;&#108;&#x65;&#x2e;&#99;&#x6f;&#x6d;</a>链接.</p>
+<h3 id="链接和邮箱"><a href="#链接和邮箱" class="headerlink" title="链接和邮箱"></a>链接和邮箱</h3><p>简单的邮箱<a href="&#x6d;&#97;&#105;&#x6c;&#116;&#111;&#x3a;&#101;&#x78;&#97;&#x6d;&#112;&#108;&#101;&#64;&#101;&#120;&#x61;&#x6d;&#x70;&#108;&#x65;&#x2e;&#x63;&#x6f;&#x6d;">&#101;&#x78;&#97;&#x6d;&#112;&#108;&#101;&#64;&#101;&#120;&#x61;&#x6d;&#x70;&#108;&#x65;&#x2e;&#x63;&#x6f;&#x6d;</a>链接.</p>
 <p>简单的行链接 <a href="https://zhanghqgit.github.io">https://zhanghqgit.github.io</a>.</p>
 <p>带名称的行链接 <a href="https://zhanghqgit.github.io">张恒强</a></p>
 <p>带提示的多行链接<a href="https://zhanghqgit.github.io" title="张恒强的简单博客">张恒强</a></p>
@@ -1298,7 +1471,7 @@ alert(&apos;Hello World!&apos;)
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">4</span>
+              <span class="site-state-item-count">5</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -1306,7 +1479,7 @@ alert(&apos;Hello World!&apos;)
           
             <div class="site-state-item site-state-categories">
               
-                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-count">2</span>
                 <span class="site-state-item-name">分类</span>
               
             </div>
@@ -1315,7 +1488,7 @@ alert(&apos;Hello World!&apos;)
           
             <div class="site-state-item site-state-tags">
               
-                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-count">2</span>
                 <span class="site-state-item-name">标签</span>
               
             </div>
