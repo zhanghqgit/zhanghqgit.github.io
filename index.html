@@ -247,6 +247,161 @@
             
               
                 
+                <a class="post-title-link" href="/2016/09/22/database-huanhang/" itemprop="url">
+                  Oracle数据库中的换行符、回车符和字符串连接
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-09-22T09:50:37+08:00" content="2016-09-22">
+              2016-09-22
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/数据库/" itemprop="url" rel="index">
+                    <span itemprop="name">数据库</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/09/22/database-huanhang/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/09/22/database-huanhang/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>  在web界面中的textarea输入框中输入回车，然后存储于oracle 数据库中，看不出回车符或者换行符号。如果想手动实现插入该符号，需要使用Oracle中的特殊字符<br>  chr(10)是换行符，chr(13)是回车符</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t(abc) <span class="keyword">values</span>(<span class="string">'abcdef'</span>||<span class="keyword">chr</span>(<span class="number">10</span>)||<span class="keyword">chr</span>(<span class="number">13</span>)||<span class="string">'hjkml'</span>);</div></pre></td></tr></table></figure>
+<p>  由此联想到其他的特殊符号应该也是在Oracle中有相应的代替符号的。大家用到的时候可以搜索下,比如制表符</p>
+<p>  另外在SQL中，表示字符串的引号强烈建议使用单引号(‘)。虽然MySQL也可以使用双引号(“)，但是为了和SQL SERVER和Oracle的统一，建议都使用单引号。如果在字符串中也有单引号出现的话，在SQL中需要将其替换为两个单引号，DBMS会将其解释为一个单引号</p>
+<p>  最后附一张不同数据库中的换行符、回车符和字符串连接符号</p>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>Oracle</th>
+<th>SQL SERVER</th>
+<th>MySQL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>回车符</td>
+<td>chr(13)</td>
+<td>char(13)</td>
+<td>\n或\r\n或char(10)</td>
+</tr>
+<tr>
+<td>换行符</td>
+<td>chr(10)</td>
+<td>char(10)</td>
+<td>\n或\r\n或char(13)</td>
+</tr>
+<tr>
+<td>字符串连接</td>
+<td>&#124;&#124;或 concat</td>
+<td>+</td>
+<td>concat</td>
+</tr>
+</tbody>
+</table>
+<p>注意：数据库版本不同可能符号也不一致</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/09/16/database-occ/" itemprop="url">
                   mysql数据库乐观锁
                 </a>
@@ -1706,7 +1861,7 @@ _   底线
 <p>右扩折号 &gt; 用来当做引用标记，<code>注意</code>：如果要使用源生&gt;,就需要使用转义符号<code>&amp;gt;</code></p>
 </blockquote>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&gt; 右扩折号 &amp;gt; 用来当做引用标记，`注意`：如果要使用源生&amp;gt;,就需要使用转义符号`&amp;gt;`</div></pre></td></tr></table></figure>
-<h3 id="链接和邮箱"><a href="#链接和邮箱" class="headerlink" title="链接和邮箱"></a>链接和邮箱</h3><p>简单的邮箱<a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#x65;&#120;&#x61;&#x6d;&#112;&#108;&#101;&#64;&#101;&#120;&#x61;&#x6d;&#x70;&#x6c;&#101;&#46;&#99;&#x6f;&#x6d;">&#x65;&#120;&#x61;&#x6d;&#112;&#108;&#101;&#64;&#101;&#120;&#x61;&#x6d;&#x70;&#x6c;&#101;&#46;&#99;&#x6f;&#x6d;</a>链接.</p>
+<h3 id="链接和邮箱"><a href="#链接和邮箱" class="headerlink" title="链接和邮箱"></a>链接和邮箱</h3><p>简单的邮箱<a href="&#x6d;&#97;&#x69;&#x6c;&#x74;&#x6f;&#58;&#101;&#120;&#97;&#x6d;&#x70;&#108;&#101;&#x40;&#101;&#120;&#97;&#x6d;&#x70;&#108;&#x65;&#x2e;&#99;&#x6f;&#x6d;">&#101;&#120;&#97;&#x6d;&#x70;&#108;&#101;&#x40;&#101;&#120;&#97;&#x6d;&#x70;&#108;&#x65;&#x2e;&#99;&#x6f;&#x6d;</a>链接.</p>
 <p>简单的行链接 <a href="https://zhanghqgit.github.io">https://zhanghqgit.github.io</a>.</p>
 <p>带名称的行链接 <a href="https://zhanghqgit.github.io">张恒强</a></p>
 <p>带提示的多行链接<a href="https://zhanghqgit.github.io" title="张恒强的简单博客">张恒强</a></p>
@@ -1917,7 +2072,7 @@ alert(&apos;Hello World!&apos;)
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-count">9</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -1934,7 +2089,7 @@ alert(&apos;Hello World!&apos;)
           
             <div class="site-state-item site-state-tags">
               
-                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-count">5</span>
                 <span class="site-state-item-name">标签</span>
               
             </div>
